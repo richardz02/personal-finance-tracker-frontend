@@ -37,8 +37,7 @@ function TransactionForm({ onTransactionAdded }) {
 
     createTransaction();
 
-    // Clear field data
-    setTypeInput("");
+    // Clear field data, leave transaction type as is
     setAmountInput("");
     setDescriptionInput("");
   }

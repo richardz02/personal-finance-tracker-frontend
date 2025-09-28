@@ -47,7 +47,6 @@ function TransactionTable({ transactions, onTransactionDeleted }) {
             <td>${transaction.amount}</td>
             <td>{transaction.description}</td>
             <td>
-              <button className="edit-btn">Edit</button>
               <button
                 onClick={() => handleDelete(transaction.id)}
                 className="delete-btn"

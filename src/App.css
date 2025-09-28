@@ -92,3 +92,50 @@
 .submit-btn:hover {
   background-color: #0091ea;
 }
+
+/* Styling for summary table */
+.summary-table {
+  width: auto;
+  margin: 20px auto;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.summary-table th {
+  background-color: #4caf50;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.summary-table td {
+  padding: 12px;
+  font-size: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.summary-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.summary-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.summary-table td:first-child {
+  color: #2e7d32; /* green for income */
+  font-weight: bold;
+}
+
+.summary-table td:nth-child(2) {
+  color: #c62828; /* red for expense */
+  font-weight: bold;
+}
+
+.summary-table td:nth-child(3) {
+  color: #1565c0; /* blue for balance */
+  font-weight: bold;
+}
