@@ -1,12 +1,13 @@
 import "./App.css";
 import TransactionForm from "./components/TransactionForm";
 import TransactionTable from "./components/TransactionTable";
-import SummaryTable from "./components/SummaryTable";
-import Button from "./components/Button";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import TransactionSummary from "./components/TransactionSummary";
 
 function App() {
+  const [openForm, setOpenForm] = useState(false);
+  const [editTransaction, setEditTransaction] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState(null);
 
@@ -14,6 +15,11 @@ function App() {
     fetchTransactions();
     fetchSummary();
   }, []);
+
+  const handleEditTransaction = (transaction) => {
+    setEditTransaction(transaction);
+    setOpenForm(true);
+  };
 
   // Get the list of all transactions from the backend
   const fetchTransactions = async () => {
@@ -27,6 +33,7 @@ function App() {
     }
   };
 
+  // Get summary
   const fetchSummary = async () => {
     try {
       const response = await axios.get(
@@ -38,27 +45,40 @@ function App() {
     }
   };
 
-  // After any changes made to the transaction table, fetch the new list of transactions to display
+  // After any changes made to the transaction table, fetch the new list of transactions to display, and also update summary
   const refreshTransactions = () => {
     fetchTransactions();
     fetchSummary();
   };
 
+  // Handles opening and closing transaction form
+  const handleOpenForm = () => {
+    setEditTransaction(null); // Clear previous transaction
+    setOpenForm(true);
+  };
+  const handleCloseForm = () => {
+    setOpenForm(false);
+  };
+
   return (
     <>
+      {/* After establishing the user feature, we should be able to dynamically greet each user */}
       <h1>Hello, Richard!</h1>
       <p>This is your finance overview</p>
-      <TransactionForm onTransactionAdded={refreshTransactions} />
+      <TransactionSummary summary={summary} />
+      <TransactionForm
+        open={openForm}
+        transaction={editTransaction}
+        handleCloseForm={handleCloseForm}
+        onTransactionAdded={refreshTransactions}
+        onTransactionUpdated={refreshTransactions}
+      />
       <TransactionTable
         transactions={transactions}
-        onTransactionDeleted={refreshTransactions}
+        refreshTransactions={refreshTransactions}
+        onAddClick={handleOpenForm}
+        onEditClick={handleEditTransaction}
       />
-      {/* <Button
-        button_text="Create Summary"
-        button_id="summary-btn"
-        handleOnClick={fetchSummary}
-      /> */}
-      <SummaryTable transactionSummary={summary} />
     </>
   );
 }
