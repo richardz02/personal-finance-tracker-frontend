@@ -1,63 +1,63 @@
 import "./App.css";
+import axios from "axios";
+
+import { useEffect, useState, useCallback } from "react";
+
+import { Button, ButtonGroup } from "@mui/material";
+
+import TransactionSummary from "./components/TransactionSummary";
 import TransactionForm from "./components/TransactionForm";
 import TransactionTable from "./components/TransactionTable";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import TransactionSummary from "./components/TransactionSummary";
 
 function App() {
-  const [openForm, setOpenForm] = useState(false);
-  const [editTransaction, setEditTransaction] = useState(null);
-  const [transactions, setTransactions] = useState([]);
-  const [summary, setSummary] = useState(null);
+  const [openForm, setOpenForm] = useState(false); // Boolean variable to open/close form
+  const [editTransaction, setEditTransaction] = useState(null); // Boolean variable, whether we are editing an existing transaction
+  const [transactions, setTransactions] = useState([]); // List of transactions to display in the table
+  const [summary, setSummary] = useState(null); // Transaction summary
+  const [period, setPeriod] = useState("day"); // Time period in which we want to display our summaries for
+
+  // Get summary
+  const fetchTransactionSummary = useCallback(async () => {
+    const currentDate = new Date();
+    const isoFormattedDate = currentDate.toISOString();
+    try {
+      console.log(
+        "Fetching summaries for " +
+          period +
+          " with current date: " +
+          isoFormattedDate
+      );
+      const response = await axios.get(
+        `http://127.0.0.1:8080/api/v1/transactions/summary?period=${period}`
+      );
+      setSummary(response.data.data.summary);
+      setTransactions(response.data.data.transactions);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [period]);
 
   useEffect(() => {
-    fetchTransactions();
-    fetchSummary();
-  }, []);
+    fetchTransactionSummary();
+  }, [fetchTransactionSummary]);
 
   const handleEditTransaction = (transaction) => {
     setEditTransaction(transaction);
     setOpenForm(true);
   };
 
-  // Get the list of all transactions from the backend
-  const fetchTransactions = async () => {
-    try {
-      const response = await axios.get(
-        "http://127.0.0.1:8080/api/v1/transactions"
-      );
-      setTransactions(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // Get summary
-  const fetchSummary = async () => {
-    try {
-      const response = await axios.get(
-        "http://127.0.0.1:8080/api/v1/transactions/summary"
-      );
-      setSummary(response.data.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   // After any changes made to the transaction table, fetch the new list of transactions to display, and also update summary
   const refreshTransactions = () => {
-    fetchTransactions();
-    fetchSummary();
+    fetchTransactionSummary();
   };
 
   // Handles opening and closing transaction form
   const handleOpenForm = () => {
     setEditTransaction(null); // Clear previous transaction
-    setOpenForm(true);
+    setOpenForm(true); // Open form
   };
   const handleCloseForm = () => {
-    setOpenForm(false);
+    setOpenForm(false); // Close form
   };
 
   return (
@@ -65,6 +65,15 @@ function App() {
       {/* After establishing the user feature, we should be able to dynamically greet each user */}
       <h1>Hello, Richard!</h1>
       <p>This is your finance overview</p>
+
+      <ButtonGroup variant="text">
+        <Button onClick={() => setPeriod("day")}>Daily</Button>
+        <Button onClick={() => setPeriod("week")}>Weekly</Button>
+        <Button onClick={() => setPeriod("month")}>Monthly</Button>
+        <Button onClick={() => setPeriod("year")}>Yearly</Button>
+        <Button onClick={() => setPeriod("all")}>All time</Button>
+      </ButtonGroup>
+
       <TransactionSummary summary={summary} />
       <TransactionForm
         open={openForm}
